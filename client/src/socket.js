@@ -1,3 +1,4 @@
 import { io } from "socket.io-client";
-
-export const socket = io("http://192.168.0.128:5000");
+export const socket = io(
+  import.meta.env.VITE_API_URL
+);
