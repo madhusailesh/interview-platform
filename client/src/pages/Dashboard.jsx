@@ -153,7 +153,7 @@ function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-5 flex items-center justify-between">
 
           <Link
-            to="/dashboard"
+            to="/interviewer-dashboard"
             className="text-2xl sm:text-3xl font-black tracking-tight bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent"
           >
             InterviewX

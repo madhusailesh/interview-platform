@@ -3,14 +3,20 @@ import { Link, Navigate } from "react-router-dom";
 function Home() {
   // Check if user is already logged in
   const token = localStorage.getItem("token");
+ 
 
-  if (token) {
-    return <Navigate to="/dashboard" replace />;
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (token && user) {
+    if (user.role === "interviewer") {
+      return <Navigate to="/interviewer-dashboard" replace />;
+    }
+
+    return <Navigate to="/candidate-dashboard" replace />;
   }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white selection:bg-green-500 selection:text-black">
-      
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-zinc-900 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-50">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
@@ -35,7 +41,6 @@ function Home() {
 
       {/* HERO SECTION */}
       <div className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 py-20 md:py-32 overflow-hidden">
-        
         {/* Subtle Ambient Background Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-green-500/10 blur-[100px] rounded-full pointer-events-none" />
 
@@ -67,7 +72,6 @@ function Home() {
 
         {/* FEATURES SECTION */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-24 w-full max-w-6xl px-2 sm:px-4">
-          
           {/* Card 1 */}
           <div className="group bg-zinc-900/40 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-zinc-900 hover:border-zinc-800/80 hover:bg-zinc-900/60 transition duration-300 text-left">
             <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800 mb-5 group-hover:border-green-500/30 transition">
@@ -77,7 +81,8 @@ function Home() {
               Video Meetings
             </h2>
             <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
-              High-quality real-time video and audio communication powered by WebRTC for lag-free technical evaluations.
+              High-quality real-time video and audio communication powered by
+              WebRTC for lag-free technical evaluations.
             </p>
           </div>
 
@@ -90,7 +95,8 @@ function Home() {
               Collaborative Coding
             </h2>
             <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
-              Shared Monaco code editor with real-time sync, syntax highlighting, and multi-language support.
+              Shared Monaco code editor with real-time sync, syntax
+              highlighting, and multi-language support.
             </p>
           </div>
 
@@ -103,10 +109,10 @@ function Home() {
               Easy Scheduling
             </h2>
             <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
-              Schedule interviews, send automated invites, and manage all your upcoming candidate sessions in one dashboard.
+              Schedule interviews, send automated invites, and manage all your
+              upcoming candidate sessions in one dashboard.
             </p>
           </div>
-
         </div>
       </div>
     </div>
