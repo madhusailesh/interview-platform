@@ -5,14 +5,14 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
-
+import interviewRoutes from "./routes/interviewRoutes.js";
 dotenv.config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
+app.use("/api/interviews", interviewRoutes);
 /* =========================
    MONGODB CONNECTION
 ========================= */

@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import Room from "./pages/Room";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-
+import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -29,11 +29,20 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+        
               <Home />
-            </ProtectedRoute>
+            
           }
         />
+
+        <Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
 
         <Route
           path="/room/:roomId"
