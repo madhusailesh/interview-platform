@@ -1,12 +1,14 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+
 import authRoutes from "./routes/authRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
-dotenv.config();
+ 
 
 const app = express();
 
