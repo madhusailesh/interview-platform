@@ -29,16 +29,29 @@ function Login() {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/auth/login`,
-        formData
+        formData,
       );
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/dashboard");
+      const data = res.data;
+
+      localStorage.setItem("token", data.token);
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      if (data.user.role === "interviewer") {
+        navigate("/interviewer-dashboard");
+      } else {
+        navigate("/candidate-dashboard");
+      }
     } catch (err) {
       console.log(err);
-      setError(err.response?.data?.message || "Invalid email or password. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          "Invalid email or password. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -46,12 +59,14 @@ function Login() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white px-4 relative overflow-hidden selection:bg-green-500 selection:text-black">
-      
       {/* Background Ambient Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] bg-green-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* Top Logo / Link back to home */}
-      <Link to="/" className="mb-8 text-2xl font-black tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent hover:opacity-80 transition">
+      <Link
+        to="/"
+        className="mb-8 text-2xl font-black tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent hover:opacity-80 transition"
+      >
         InterviewX
       </Link>
 
@@ -93,7 +108,10 @@ function Login() {
               <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">
                 Password
               </label>
-              <a href="#" className="text-xs text-zinc-500 hover:text-green-400 transition">
+              <a
+                href="#"
+                className="text-xs text-zinc-500 hover:text-green-400 transition"
+              >
                 Forgot password?
               </a>
             </div>
