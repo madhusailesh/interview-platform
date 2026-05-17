@@ -11,43 +11,27 @@ const createTransporter = () => {
   });
 };
 
-export const sendInterviewEmail =
-  async ({
-    to,
-    title,
-    date,
-    time,
-    roomId,
-  }) => {
-    try {
-      console.log(
-        "EMAIL USER:",
-        process.env.EMAIL_USER
-      );
+export const sendInterviewEmail = async ({ to, title, date, time, roomId }) => {
+  try {
+    console.log("EMAIL USER:", process.env.EMAIL_USER);
 
-      console.log(
-        "EMAIL PASS:",
-        process.env.EMAIL_PASS
-      );
+    console.log("EMAIL PASS:", process.env.EMAIL_PASS);
 
-      console.log("EMAIL SENDING...");
-      console.log("TO:", to);
+    console.log("EMAIL SENDING...");
+    console.log("TO:", to);
 
-      const transporter =
-        createTransporter();
+    const transporter = createTransporter();
 
-      const roomLink =
-        `https://interview-platform-two-beta.vercel.app/room/${roomId}`;
+    const roomLink = `https://interview-platform-two-beta.vercel.app/room/${roomId}`;
 
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
 
-        to,
+      to,
 
-        subject:
-          `Interview Invitation - ${title}`,
+      subject: `Interview Invitation - ${title}`,
 
-        html: `
+      html: `
           <div
             style="
               font-family:Arial;
@@ -117,21 +101,15 @@ export const sendInterviewEmail =
                 color:#9ca3af;
               "
             >
-              InterviewX Platform
+              SaileshHire Platform
             </p>
 
           </div>
         `,
-      });
+    });
 
-      console.log(
-        "EMAIL SENT SUCCESSFULLY"
-      );
-
-    } catch (err) {
-      console.log(
-        "EMAIL ERROR:",
-        err.message
-      );
-    }
-  };
+    console.log("EMAIL SENT SUCCESSFULLY");
+  } catch (err) {
+    console.log("EMAIL ERROR:", err.message);
+  }
+};

@@ -57,7 +57,7 @@ function Signup() {
         to="/"
         className="mb-8 text-3xl font-black tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent"
       >
-        InterviewX
+        SaileshHire
       </Link>
 
       {/* CARD */}

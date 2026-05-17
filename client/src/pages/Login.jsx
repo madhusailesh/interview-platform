@@ -67,7 +67,7 @@ function Login() {
         to="/"
         className="mb-8 text-2xl font-black tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent hover:opacity-80 transition"
       >
-        InterviewX
+        SaileshHire
       </Link>
 
       <div className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl p-6 sm:p-10 rounded-2xl border border-zinc-900/80 shadow-2xl">

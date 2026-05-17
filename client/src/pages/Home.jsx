@@ -3,7 +3,6 @@ import { Link, Navigate } from "react-router-dom";
 function Home() {
   // Check if user is already logged in
   const token = localStorage.getItem("token");
- 
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -20,7 +19,7 @@ function Home() {
       {/* NAVBAR */}
       <nav className="flex items-center justify-between px-6 md:px-12 py-5 border-b border-zinc-900 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-50">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
-          InterviewX
+          SaileshHire
         </h1>
 
         <div className="flex items-center gap-3 md:gap-4">
@@ -115,8 +114,46 @@ function Home() {
           </div>
         </div>
       </div>
+
+            {/* FOOTER */}
+      <footer className="border-t border-zinc-900 mt-10">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          
+          <div>
+            <h2 className="text-lg font-bold bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">
+              SaileshHire
+            </h2>
+
+            <p className="text-zinc-500 text-sm mt-1">
+              Built for seamless real-time technical interviews.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end">
+            <p className="text-zinc-400 text-sm">
+              Made with ❤️ by{" "}
+              <span className="text-white font-semibold">
+                Madhu Sailesh Sasamal
+              </span>
+            </p>
+
+            <a
+              href="https://www.linkedin.com/in/madhu-sailesh-sasamal-6918912a4/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 text-green-400 hover:text-green-300 transition text-sm flex items-center gap-2"
+            >
+              <span>🔗</span> LinkedIn Profile
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
+
+    
   );
+
+  
 }
 
 export default Home;
