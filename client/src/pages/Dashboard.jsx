@@ -9,29 +9,56 @@ function Dashboard() {
     localStorage.getItem("user")
   );
 
-  // CREATE INTERVIEW STATES
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-
-  // NEW
-  const [candidateEmail, setCandidateEmail] =
+  // STATES
+  const [title, setTitle] =
     useState("");
 
-  const [loadingSchedule, setLoadingSchedule] =
-    useState(false);
+  const [date, setDate] =
+    useState("");
 
-  // JOIN ROOM STATE
+  const [time, setTime] =
+    useState("");
+
+  const [
+    candidateEmail,
+    setCandidateEmail,
+  ] = useState("");
+
+  const [
+    loadingSchedule,
+    setLoadingSchedule,
+  ] = useState(false);
+
   const [joinRoomId, setJoinRoomId] =
     useState("");
 
-  // INTERVIEWS
   const [interviews, setInterviews] =
     useState([]);
 
-  // COPY STATE
   const [copiedId, setCopiedId] =
     useState("");
+
+  // FILTERS
+  const upcomingInterviews =
+    interviews.filter(
+      (interview) =>
+        interview.status ===
+        "scheduled"
+    );
+
+  const completedInterviews =
+    interviews.filter(
+      (interview) =>
+        interview.status ===
+        "completed"
+    );
+
+  const cancelledInterviews =
+    interviews.filter(
+      (interview) =>
+        interview.status ===
+        "cancelled"
+    );
 
   // LOGOUT
   const logout = () => {
@@ -41,9 +68,10 @@ function Dashboard() {
     navigate("/");
   };
 
-  // GENERATE SHORT ROOM ID
+  // ROOM ID
   const generateRoomId = () => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     const generatePart = () => {
       let part = "";
@@ -51,7 +79,8 @@ function Dashboard() {
       for (let i = 0; i < 3; i++) {
         part += chars.charAt(
           Math.floor(
-            Math.random() * chars.length
+            Math.random() *
+              chars.length
           )
         );
       }
@@ -62,7 +91,7 @@ function Dashboard() {
     return `${generatePart()}-${generatePart()}-${generatePart()}`;
   };
 
-  // FETCH ONLY CURRENT USER INTERVIEWS
+  // FETCH
   const fetchInterviews = async () => {
     try {
       const res = await axios.get(
@@ -70,6 +99,7 @@ function Dashboard() {
       );
 
       setInterviews(res.data);
+
     } catch (err) {
       console.log(err);
     }
@@ -79,61 +109,66 @@ function Dashboard() {
     fetchInterviews();
   }, []);
 
-  // SCHEDULE INTERVIEW
-  const scheduleInterview = async (e) => {
-    e.preventDefault();
+  // CREATE
+  const scheduleInterview =
+    async (e) => {
+      e.preventDefault();
 
-    if (
-      !title ||
-      !date ||
-      !time ||
-      !candidateEmail
-    )
-      return;
+      if (
+        !title ||
+        !date ||
+        !time ||
+        !candidateEmail
+      )
+        return;
 
-    setLoadingSchedule(true);
+      setLoadingSchedule(true);
 
-    try {
-      const roomId = generateRoomId();
+      try {
+        const roomId =
+          generateRoomId();
 
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/interviews`,
-        {
-          title,
-          date,
-          time,
-          roomId,
+        await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/interviews`,
+          {
+            title,
+            date,
+            time,
+            roomId,
+            candidateEmail,
+            createdBy:
+              user.email,
+          }
+        );
 
-          // NEW
-          candidateEmail,
+        setTitle("");
+        setDate("");
+        setTime("");
+        setCandidateEmail("");
 
-          createdBy: user.email,
-        }
-      );
+        fetchInterviews();
 
-      setTitle("");
-      setDate("");
-      setTime("");
-      setCandidateEmail("");
+      } catch (err) {
+        console.log(err);
 
-      fetchInterviews();
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoadingSchedule(false);
-    }
-  };
+      } finally {
+        setLoadingSchedule(false);
+      }
+    };
 
-  // JOIN EXISTING ROOM
+  // JOIN
   const joinExistingRoom = (e) => {
     e.preventDefault();
 
-    if (!joinRoomId.trim()) return;
+    if (!joinRoomId.trim())
+      return;
 
-    navigate(`/room/${joinRoomId.trim()}`);
+    navigate(
+      `/room/${joinRoomId.trim()}`
+    );
   };
 
-  // COPY ROOM ID
+  // COPY
   const handleCopy = (id) => {
     navigator.clipboard.writeText(id);
 
@@ -143,6 +178,24 @@ function Dashboard() {
       setCopiedId("");
     }, 2000);
   };
+
+  // UPDATE STATUS
+  const updateStatus =
+    async (id, status) => {
+      try {
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/api/interviews/${id}/status`,
+          {
+            status,
+          }
+        );
+
+        fetchInterviews();
+
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -169,25 +222,29 @@ function Dashboard() {
         </div>
       </nav>
 
-      {/* PAGE CONTENT */}
+      {/* PAGE */}
       <div className="p-4 sm:p-6 md:p-10">
 
         {/* HEADER */}
         <header className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 max-w-7xl mx-auto border-b border-zinc-900 pb-6">
 
           <div>
+
             <h1 className="text-3xl sm:text-4xl font-black">
               Interview Dashboard
             </h1>
 
             <p className="text-zinc-400 text-sm mt-1">
-              Manage upcoming interviews.
+              Manage interviews professionally.
             </p>
+
           </div>
 
           {/* QUICK JOIN */}
           <form
-            onSubmit={joinExistingRoom}
+            onSubmit={
+              joinExistingRoom
+            }
             className="flex gap-2 bg-zinc-900 p-2 rounded-xl border border-zinc-800 w-full md:w-auto max-w-md"
           >
 
@@ -196,7 +253,9 @@ function Dashboard() {
               placeholder="Enter Room ID"
               value={joinRoomId}
               onChange={(e) =>
-                setJoinRoomId(e.target.value)
+                setJoinRoomId(
+                  e.target.value
+                )
               }
               className="flex-1 p-2.5 px-4 rounded-lg bg-zinc-950 border border-zinc-850 outline-none"
             />
@@ -222,7 +281,9 @@ function Dashboard() {
             </h2>
 
             <form
-              onSubmit={scheduleInterview}
+              onSubmit={
+                scheduleInterview
+              }
               className="space-y-4"
             >
 
@@ -232,17 +293,20 @@ function Dashboard() {
                 placeholder="Interview Title"
                 value={title}
                 onChange={(e) =>
-                  setTitle(e.target.value)
+                  setTitle(
+                    e.target.value
+                  )
                 }
                 className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
               />
 
-              {/* NEW */}
               <input
                 type="email"
                 required
                 placeholder="Candidate Email"
-                value={candidateEmail}
+                value={
+                  candidateEmail
+                }
                 onChange={(e) =>
                   setCandidateEmail(
                     e.target.value
@@ -258,7 +322,9 @@ function Dashboard() {
                   required
                   value={date}
                   onChange={(e) =>
-                    setDate(e.target.value)
+                    setDate(
+                      e.target.value
+                    )
                   }
                   className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
                 />
@@ -268,7 +334,9 @@ function Dashboard() {
                   required
                   value={time}
                   onChange={(e) =>
-                    setTime(e.target.value)
+                    setTime(
+                      e.target.value
+                    )
                   }
                   className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
                 />
@@ -277,7 +345,9 @@ function Dashboard() {
 
               <button
                 type="submit"
-                disabled={loadingSchedule}
+                disabled={
+                  loadingSchedule
+                }
                 className="w-full bg-white text-black font-bold py-3 rounded-xl"
               >
                 {loadingSchedule
@@ -289,87 +359,223 @@ function Dashboard() {
           </section>
 
           {/* RIGHT */}
-          <section className="lg:col-span-2 space-y-4">
+          <section className="lg:col-span-2 space-y-10">
 
-            <h2 className="text-xl font-bold">
-              💻 Your Interviews (
-              {interviews.length})
-            </h2>
+            {/* UPCOMING */}
+            <div>
 
-            {interviews.length === 0 ? (
-              <div className="text-center py-16 bg-zinc-900/20 rounded-2xl border border-zinc-900">
-                <p className="text-zinc-500">
-                  No interviews scheduled yet.
-                </p>
-              </div>
-            ) : (
-              interviews.map((interview) => (
-                <div
-                  key={interview._id}
-                  className="bg-zinc-900/30 p-5 rounded-2xl border border-zinc-900 flex flex-col sm:flex-row gap-4 justify-between sm:items-center"
-                >
+              <h2 className="text-xl font-bold mb-4">
+                🚀 Upcoming Interviews
+              </h2>
 
-                  {/* LEFT */}
-                  <div>
+              {upcomingInterviews.length ===
+              0 ? (
 
-                    <h3 className="text-lg font-bold">
-                      {interview.title}
-                    </h3>
-
-                    <p className="text-sm text-zinc-400 mt-1">
-                      🗓️ {interview.date}
-                    </p>
-
-                    <p className="text-sm text-zinc-400">
-                      ⏰ {interview.time}
-                    </p>
-
-                    <p className="text-sm text-zinc-500 mt-2">
-                      Candidate:{" "}
-                      {
-                        interview.candidateEmail
-                      }
-                    </p>
-
-                    <div className="pt-2">
-                      <span className="text-xs bg-zinc-950 px-2 py-1 rounded-md text-zinc-400 font-mono border border-zinc-850">
-                        ID: {interview.roomId}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* RIGHT */}
-                  <div className="flex gap-2">
-
-                    <button
-                      onClick={() =>
-                        handleCopy(
-                          interview.roomId
-                        )
-                      }
-                      className="bg-zinc-800 text-zinc-300 px-4 py-3 rounded-xl text-xs"
-                    >
-                      {copiedId ===
-                      interview.roomId
-                        ? "Copied! ✅"
-                        : "Copy ID"}
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/room/${interview.roomId}`
-                        )
-                      }
-                      className="bg-green-500 text-black px-5 py-3 rounded-xl font-bold text-xs"
-                    >
-                      Join Room
-                    </button>
-
-                  </div>
+                <div className="text-center py-16 bg-zinc-900/20 rounded-2xl border border-zinc-900">
+                  <p className="text-zinc-500">
+                    No upcoming interviews.
+                  </p>
                 </div>
-              ))
-            )}
+
+              ) : (
+
+                upcomingInterviews.map(
+                  (interview) => (
+                    <div
+                      key={
+                        interview._id
+                      }
+                      className="bg-zinc-900/30 p-5 rounded-2xl border border-zinc-900 flex flex-col sm:flex-row gap-4 justify-between sm:items-center mb-4"
+                    >
+
+                      <div>
+
+                        <h3 className="text-lg font-bold">
+                          {
+                            interview.title
+                          }
+                        </h3>
+
+                        <p className="text-sm text-zinc-400 mt-1">
+                          🗓️{" "}
+                          {
+                            interview.date
+                          }
+                        </p>
+
+                        <p className="text-sm text-zinc-400">
+                          ⏰{" "}
+                          {
+                            interview.time
+                          }
+                        </p>
+
+                        <p className="text-sm text-zinc-500 mt-2">
+                          Candidate:
+                          {" "}
+                          {
+                            interview.candidateEmail
+                          }
+                        </p>
+
+                        <div className="pt-2">
+                          <span className="text-xs bg-zinc-950 px-2 py-1 rounded-md text-zinc-400 font-mono border border-zinc-850">
+                            ID:
+                            {" "}
+                            {
+                              interview.roomId
+                            }
+                          </span>
+                        </div>
+
+                      </div>
+
+                      <div className="flex gap-2 flex-wrap">
+
+                        <button
+                          onClick={() =>
+                            handleCopy(
+                              interview.roomId
+                            )
+                          }
+                          className="bg-zinc-800 text-zinc-300 px-4 py-3 rounded-xl text-xs"
+                        >
+                          {copiedId ===
+                          interview.roomId
+                            ? "Copied! ✅"
+                            : "Copy ID"}
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            navigate(
+                              `/room/${interview.roomId}`
+                            )
+                          }
+                          className="bg-green-500 text-black px-5 py-3 rounded-xl font-bold text-xs"
+                        >
+                          Join
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            updateStatus(
+                              interview._id,
+                              "completed"
+                            )
+                          }
+                          className="bg-blue-500 text-white px-5 py-3 rounded-xl font-bold text-xs"
+                        >
+                          Complete
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            updateStatus(
+                              interview._id,
+                              "cancelled"
+                            )
+                          }
+                          className="bg-red-500 text-white px-5 py-3 rounded-xl font-bold text-xs"
+                        >
+                          Cancel
+                        </button>
+
+                      </div>
+
+                    </div>
+                  )
+                )
+
+              )}
+
+            </div>
+
+            {/* COMPLETED */}
+            <div>
+
+              <h2 className="text-xl font-bold mb-4">
+                ✅ Completed Interviews
+              </h2>
+
+              {completedInterviews.length ===
+              0 ? (
+
+                <div className="text-zinc-500">
+                  No completed interviews.
+                </div>
+
+              ) : (
+
+                completedInterviews.map(
+                  (interview) => (
+                    <div
+                      key={
+                        interview._id
+                      }
+                      className="bg-zinc-900/20 border border-zinc-900 p-5 rounded-2xl mb-4"
+                    >
+
+                      <h3 className="text-lg font-bold">
+                        {
+                          interview.title
+                        }
+                      </h3>
+
+                      <p className="text-green-400 mt-2 text-sm">
+                        Completed
+                      </p>
+
+                    </div>
+                  )
+                )
+
+              )}
+
+            </div>
+
+            {/* CANCELLED */}
+            <div>
+
+              <h2 className="text-xl font-bold mb-4">
+                ❌ Cancelled Interviews
+              </h2>
+
+              {cancelledInterviews.length ===
+              0 ? (
+
+                <div className="text-zinc-500">
+                  No cancelled interviews.
+                </div>
+
+              ) : (
+
+                cancelledInterviews.map(
+                  (interview) => (
+                    <div
+                      key={
+                        interview._id
+                      }
+                      className="bg-red-500/5 border border-red-500/10 p-5 rounded-2xl mb-4"
+                    >
+
+                      <h3 className="text-lg font-bold">
+                        {
+                          interview.title
+                        }
+                      </h3>
+
+                      <p className="text-red-400 mt-2 text-sm">
+                        Cancelled
+                      </p>
+
+                    </div>
+                  )
+                )
+
+              )}
+
+            </div>
 
           </section>
         </main>
