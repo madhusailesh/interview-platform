@@ -5,10 +5,19 @@ import { useNavigate, Link } from "react-router-dom";
 function Dashboard() {
   const navigate = useNavigate();
 
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
   // CREATE INTERVIEW STATES
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+
+  // NEW
+  const [candidateEmail, setCandidateEmail] =
+    useState("");
+
   const [loadingSchedule, setLoadingSchedule] =
     useState(false);
 
@@ -53,11 +62,11 @@ function Dashboard() {
     return `${generatePart()}-${generatePart()}-${generatePart()}`;
   };
 
-  // FETCH INTERVIEWS
+  // FETCH ONLY CURRENT USER INTERVIEWS
   const fetchInterviews = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/interviews`
+        `${import.meta.env.VITE_API_URL}/api/interviews?email=${user.email}`
       );
 
       setInterviews(res.data);
@@ -74,7 +83,13 @@ function Dashboard() {
   const scheduleInterview = async (e) => {
     e.preventDefault();
 
-    if (!title || !date || !time) return;
+    if (
+      !title ||
+      !date ||
+      !time ||
+      !candidateEmail
+    )
+      return;
 
     setLoadingSchedule(true);
 
@@ -88,12 +103,18 @@ function Dashboard() {
           date,
           time,
           roomId,
+
+          // NEW
+          candidateEmail,
+
+          createdBy: user.email,
         }
       );
 
       setTitle("");
       setDate("");
       setTime("");
+      setCandidateEmail("");
 
       fetchInterviews();
     } catch (err) {
@@ -131,7 +152,6 @@ function Dashboard() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-5 flex items-center justify-between">
 
-          {/* LOGO */}
           <Link
             to="/dashboard"
             className="text-2xl sm:text-3xl font-black tracking-tight bg-gradient-to-r from-white via-zinc-300 to-zinc-600 bg-clip-text text-transparent"
@@ -139,34 +159,29 @@ function Dashboard() {
             InterviewX
           </Link>
 
-          {/* RIGHT SIDE */}
-          <div className="flex items-center gap-3">
+          <button
+            onClick={logout}
+            className="bg-red-500 hover:bg-red-600 transition px-5 py-2.5 rounded-xl text-sm font-bold"
+          >
+            Logout
+          </button>
 
-            <button
-              onClick={logout}
-              className="bg-red-500 hover:bg-red-600 transition px-5 py-2.5 rounded-xl text-sm font-bold"
-            >
-              Logout
-            </button>
-
-          </div>
         </div>
       </nav>
 
       {/* PAGE CONTENT */}
-      <div className="p-4 sm:p-6 md:p-10 selection:bg-green-500 selection:text-black">
+      <div className="p-4 sm:p-6 md:p-10">
 
-        {/* HEADER SECTION */}
+        {/* HEADER */}
         <header className="mb-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 max-w-7xl mx-auto border-b border-zinc-900 pb-6">
 
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-black">
               Interview Dashboard
             </h1>
 
             <p className="text-zinc-400 text-sm mt-1">
-              Manage upcoming evaluations and
-              live rooms instantly.
+              Manage upcoming interviews.
             </p>
           </div>
 
@@ -183,12 +198,12 @@ function Dashboard() {
               onChange={(e) =>
                 setJoinRoomId(e.target.value)
               }
-              className="flex-1 p-2.5 px-4 rounded-lg bg-zinc-950 border border-zinc-850 outline-none text-sm placeholder-zinc-600 focus:border-green-500/40 transition"
+              className="flex-1 p-2.5 px-4 rounded-lg bg-zinc-950 border border-zinc-850 outline-none"
             />
 
             <button
               type="submit"
-              className="bg-green-500 hover:bg-green-400 text-black px-5 rounded-lg font-bold text-sm tracking-wide transition duration-300"
+              className="bg-green-500 text-black px-5 rounded-lg font-bold"
             >
               Join
             </button>
@@ -196,15 +211,14 @@ function Dashboard() {
           </form>
         </header>
 
-        {/* MAIN GRID */}
+        {/* MAIN */}
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto items-start">
 
-          {/* LEFT PANEL */}
-          <section className="lg:col-span-1 bg-zinc-900/40 backdrop-blur-sm p-6 rounded-2xl border border-zinc-900 shadow-xl sticky top-28">
+          {/* LEFT */}
+          <section className="lg:col-span-1 bg-zinc-900/40 p-6 rounded-2xl border border-zinc-900">
 
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-zinc-100">
-              <span>📅</span>
-              Schedule Interview
+            <h2 className="text-xl font-bold mb-4">
+              📅 Schedule Interview
             </h2>
 
             <form
@@ -212,83 +226,79 @@ function Dashboard() {
               className="space-y-4"
             >
 
-              <div>
-                <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                  Interview Title
-                </label>
+              <input
+                type="text"
+                required
+                placeholder="Interview Title"
+                value={title}
+                onChange={(e) =>
+                  setTitle(e.target.value)
+                }
+                className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
+              />
 
-                <input
-                  type="text"
-                  required
-                  placeholder="Frontend Developer Technical..."
-                  value={title}
-                  onChange={(e) =>
-                    setTitle(e.target.value)
-                  }
-                  className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850 focus:border-green-500/50 outline-none transition text-sm text-white placeholder-zinc-700"
-                />
-              </div>
+              {/* NEW */}
+              <input
+                type="email"
+                required
+                placeholder="Candidate Email"
+                value={candidateEmail}
+                onChange={(e) =>
+                  setCandidateEmail(
+                    e.target.value
+                  )
+                }
+                className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
+              />
 
               <div className="grid grid-cols-2 gap-3">
 
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                    Date
-                  </label>
+                <input
+                  type="date"
+                  required
+                  value={date}
+                  onChange={(e) =>
+                    setDate(e.target.value)
+                  }
+                  className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
+                />
 
-                  <input
-                    type="date"
-                    required
-                    value={date}
-                    onChange={(e) =>
-                      setDate(e.target.value)
-                    }
-                    className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850 focus:border-green-500/50 outline-none transition text-sm text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                    Time
-                  </label>
-
-                  <input
-                    type="time"
-                    required
-                    value={time}
-                    onChange={(e) =>
-                      setTime(e.target.value)
-                    }
-                    className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850 focus:border-green-500/50 outline-none transition text-sm text-white"
-                  />
-                </div>
+                <input
+                  type="time"
+                  required
+                  value={time}
+                  onChange={(e) =>
+                    setTime(e.target.value)
+                  }
+                  className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-850"
+                />
 
               </div>
 
               <button
                 type="submit"
                 disabled={loadingSchedule}
-                className="w-full bg-zinc-100 hover:bg-white text-black font-bold py-3 rounded-xl transition duration-300 text-sm mt-2 disabled:opacity-50"
+                className="w-full bg-white text-black font-bold py-3 rounded-xl"
               >
                 {loadingSchedule
                   ? "Scheduling..."
-                  : "Create Session Link"}
+                  : "Create Session"}
               </button>
 
             </form>
           </section>
 
-          {/* RIGHT PANEL */}
+          {/* RIGHT */}
           <section className="lg:col-span-2 space-y-4">
 
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-2 text-zinc-100">
-              <span>💻</span>
-              Active Sessions ({interviews.length})
+            <h2 className="text-xl font-bold">
+              💻 Your Interviews (
+              {interviews.length})
             </h2>
 
             {interviews.length === 0 ? (
-              <div className="text-center py-16 bg-zinc-900/20 rounded-2xl border border-zinc-900 border-dashed">
-                <p className="text-zinc-500 text-sm">
+              <div className="text-center py-16 bg-zinc-900/20 rounded-2xl border border-zinc-900">
+                <p className="text-zinc-500">
                   No interviews scheduled yet.
                 </p>
               </div>
@@ -296,43 +306,40 @@ function Dashboard() {
               interviews.map((interview) => (
                 <div
                   key={interview._id}
-                  className="group bg-zinc-900/30 hover:bg-zinc-900/50 p-5 sm:p-6 rounded-2xl border border-zinc-900 hover:border-zinc-800 flex flex-col sm:flex-row gap-4 justify-between sm:items-center transition duration-300"
+                  className="bg-zinc-900/30 p-5 rounded-2xl border border-zinc-900 flex flex-col sm:flex-row gap-4 justify-between sm:items-center"
                 >
 
                   {/* LEFT */}
-                  <div className="space-y-1">
+                  <div>
 
-                    <h3 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-100 group-hover:text-white transition">
+                    <h3 className="text-lg font-bold">
                       {interview.title}
                     </h3>
 
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-400">
+                    <p className="text-sm text-zinc-400 mt-1">
+                      🗓️ {interview.date}
+                    </p>
 
-                      <span className="flex items-center gap-1 text-zinc-300">
-                        🗓️ {interview.date}
-                      </span>
+                    <p className="text-sm text-zinc-400">
+                      ⏰ {interview.time}
+                    </p>
 
-                      <span className="hidden sm:inline text-zinc-700">
-                        •
-                      </span>
-
-                      <span className="flex items-center gap-1 text-zinc-300">
-                        ⏰ {interview.time}
-                      </span>
-
-                    </div>
+                    <p className="text-sm text-zinc-500 mt-2">
+                      Candidate:{" "}
+                      {
+                        interview.candidateEmail
+                      }
+                    </p>
 
                     <div className="pt-2">
-
-                      <span className="text-xs bg-zinc-950 px-2.5 py-1 rounded-md text-zinc-400 font-mono border border-zinc-850 select-all">
+                      <span className="text-xs bg-zinc-950 px-2 py-1 rounded-md text-zinc-400 font-mono border border-zinc-850">
                         ID: {interview.roomId}
                       </span>
-
                     </div>
                   </div>
 
                   {/* RIGHT */}
-                  <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                  <div className="flex gap-2">
 
                     <button
                       onClick={() =>
@@ -340,7 +347,7 @@ function Dashboard() {
                           interview.roomId
                         )
                       }
-                      className="flex-1 sm:flex-none text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 px-4 py-3 rounded-xl font-medium min-w-[85px] transition"
+                      className="bg-zinc-800 text-zinc-300 px-4 py-3 rounded-xl text-xs"
                     >
                       {copiedId ===
                       interview.roomId
@@ -354,7 +361,7 @@ function Dashboard() {
                           `/room/${interview.roomId}`
                         )
                       }
-                      className="flex-1 sm:flex-none text-xs bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-black border border-green-500/20 px-5 py-3 rounded-xl font-bold transition duration-300"
+                      className="bg-green-500 text-black px-5 py-3 rounded-xl font-bold text-xs"
                     >
                       Join Room
                     </button>

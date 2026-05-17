@@ -24,7 +24,17 @@ export const getInterviews = async (
 ) => {
   try {
     const interviews =
-      await Interview.find().sort({
+      await Interview.find({
+        $or: [
+          {
+            createdBy: req.query.email,
+          },
+          {
+            candidateEmail:
+              req.query.email,
+          },
+        ],
+      }).sort({
         createdAt: -1,
       });
 
